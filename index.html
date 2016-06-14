@@ -1,0 +1,273 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<title>打字游戏</title>
+</head>
+<style>
+.*{
+		margin: 0;
+		padding:0;
+		list-style: none;
+	}
+body,html{
+	height: 100%;
+	margin: 0;
+	padding: 0,200px;
+	background-image: url(img/5.jpg);
+	font-family: '微软雅黑';
+	/*background:#000;*/
+}
+#sence{
+	width: 100%;
+	height: 100%;
+	margin:0;
+	padding:0;
+}
+.control{
+	width:20%;
+	height:100%;
+	position: absolute;
+	background: #000;
+	float: left;
+
+}
+.control dt{
+	font-size:25px;
+	background:pink;
+	text-align: center;
+	line-height:50px;
+	margin: 10px 0;
+}
+.selecte{
+	font-size:18px;
+	color:white;
+	background:pink;
+	text-align: center;
+	line-height:20px;
+	padding: 10px 10px;
+	margin:15px;
+}
+.control dd.active{
+	background:#000;
+}
+.control ul{
+	margin-top:50px;
+    margin-left: 50px;
+}
+.control ul li{
+	width: 80px;
+	padding: 10px 40px;
+    margin:10px 5px;
+    background: #555;
+    font-size: 20px;
+    text-align: center;
+    color:white;
+    display: inline-block;
+}
+.control li.chose{
+	background: green;
+}
+.box{
+	width: 80%;
+	height: 100%;
+	position:absolute;
+	top:0;
+	left:20%;
+	bottom: 0;
+	right: 0;
+	border: 1px solid#ccc;
+	overflow: hidden;
+}
+.one{
+	width: 100%;
+	height:100%;
+	position:absolute;
+	left: 0;
+	right: 0;
+}
+.zi{
+	width: 120px;
+	height: 120px;
+	position: absolute;
+	font-size: 60px;
+	font-weight: 400;
+	text-align: center;
+    line-height: 120px;
+	display:inline-block;
+	padding:5px 10px;
+	border-radius:50%; 
+	opacity:.0.2;
+	color: #000;
+}
+</style>
+<body>
+	<div id="sence">
+		<div class="control">
+			<dl>
+				<dt class="zhuti">主题
+					<dd class="selecte">简约</dd>
+					<dd class="selecte active">唯美</dd>
+					<dd class="selecte">明媚</dd>
+					<dd class="selecte">忧伤</dd>
+				</dt>
+			</dl>
+			<ul>
+				<li class="begin chose">开始游戏</li>
+				<li class="stop">停止游戏</li>
+			</ul>
+		</div>
+		<div class="box">
+			<div class="one red" >
+				<img src="img/4.jpg">
+			</div>
+			<div class="one pink" >
+				<img src="img/c.jpg">
+			</div>
+			<div class="one orange">
+				<img src="img/a.jpg">
+			</div>
+			<div class="one black" >
+				<img src="img/5.jpg">
+			</div>
+		</div>
+	</div>	
+</body>
+<script src="function.js"></script>
+<script>
+	var box=document.querySelector('.box');
+	var zimujihe={}; //['k':div;'a':div]
+	var shuliang=5;    //定义每次出现的字母数量
+	var  score=document.createElement('div');
+	score.style.cssText="width:150px;height:auto;line-height:50px;margin:0 auto;border:1px solid#ccc;text-align:center;background:#000;color:red;font-size:18px; z-index:1;position:relative"
+	var grade=0;
+	score.innerHTML='您已获得'+grade+'分';
+	box.appendChild(score); 
+
+
+
+	//选项卡
+	var zhuti=function(){
+		// 找类名是lis的
+		var lis=$(".selecte");
+		// 找类名是one的所有
+		var ones=$(".one");
+		//循环 让上下保持一致
+		for(var i=0;i<lis.length;i++){
+			lis[i].index=i;
+			lis[i].onclick=function(){
+			// 循环 让其他图片(色块)消失
+			for(var j=0;j<ones.length;j++){
+				ones[j].style.display="none";
+				lis[j].classList.remove('active');
+			}
+			ones[this.index].style.display="block";
+			lis[this.index].classList.add('active')
+		 }
+	 }
+  }
+  zhuti();
+
+
+    var createZimu=function(){
+    	do{
+    		var zi=String.fromCharCode(Math.floor(Math.random()*26+97));
+    	}while(zimujihe[zi]);   //去重
+		var el=document.createElement('div');//创建新出现字母
+		el.classList.add('zi');
+		el.innerHTML=zi;
+	
+		var r=Math.floor(Math.random()*255);  //随机显示颜色
+		var g=Math.floor(Math.random()*255);
+		var b=Math.floor(Math.random()*255);
+		el.style.backgroundColor='rgb('+r+','+g+','+b+')';
+		// box.style.backgroundColor='rgb('+r+','+g+','+b+')';
+		box.appendChild(el);               //将创建的新字母加到box中
+        el.style.left=Math.floor(Math.random()*(box.offsetWidth-el.offsetWidth))+'px';             //定zi元素始终在box中
+        var ran=Math.ceil(Math.random()*5);  //每次出现5个元素
+		zimujihe[zi]={top:0,yuansu:el,off:ran}; // 定义三个键值
+	}
+	for(var i=0;i<shuliang;i++){               //循环让界面中总保持5个
+	 	createZimu();
+	 }
+	  	
+    var removeZimu=function(zi){                 //移除字母
+         var el=zimujihe[zi].yuansu;
+         el.parentElement.removeChild(el);        //界面中移除
+         delete zimujihe[zi];                     //数据中移除
+    }
+     
+  
+	
+	document.onkeyup=function(e){                  //键盘事件     
+		if(e.keyCode===32){
+			toggleGame();
+			return;
+		}		    
+		var key=String.fromCharCode(e.keyCode).toLowerCase();
+		if(zimujihe[key]){                      //按下后先移除在创建
+			removeZimu(key);
+			createZimu();
+			grade+=1;
+			score.innerHTML='您已获得'+grade+'分';
+		}
+	}
+    var h=box.offsetHeight;                      //让字母块掉落
+    var diao =function(){
+       var arr=[];
+       for( var i in zimujihe){
+       	var data=zimujihe[i];
+       	var el=data.yuansu;
+       	data.top+=data.off;
+       	el.style.top=data.top+'px';
+       	if(data.top>h){
+              arr.push(i);      
+       	  }
+       }
+      if(arr.length){
+      	for(var i=0;i<arr.length;i++){
+      		removeZimu(arr[i])
+            createZimu();
+
+      	}             
+      }
+    }
+    var timeId=setInterval(diao,20);  //时间编码
+   
+    // var toggleGame=function(){
+    //    	if(timeId){
+    //    		clearInterval(timeId);
+    //    		timeId=null;
+    //    	}else{
+    //    		timeId=setInterval(diao,20);
+    //    	}
+    //   }
+    var start=document.querySelector('.begin');
+    var stop=document.querySelector('.stop');
+
+    // document.onclick=function(){
+    //    	if(timeId){
+    //    		clearInterval(timeId);
+    //    		timeId=null;
+    //    	}else{
+    //    		timeId=setInterval(diao,20);
+    //    	}
+    //   }
+
+   
+   start.onclick=function(){
+      timeId=setInterval(diao,20);
+      stop.classList.remove('chose');
+      start.classList.add('chose');
+    // start.style.display="none";
+   }
+   stop.onclick=function(){
+       clearInterval(timeId);
+       start.classList.remove('chose');
+       stop.classList.add('chose');
+      // timeId=null;
+   }
+
+
+</script>
+</html>
